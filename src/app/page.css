@@ -1,0 +1,164 @@
+.mainPageContainer {
+  display: flex;
+  justify-content: center;
+}
+.mainContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 750px;
+}
+/* HomePage Header  */
+.header {
+  position: fixed;
+  display: flex;
+  background-color: white;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 750px;
+  height: 135px;
+  top: 0;
+  z-index: 100;
+}
+.header .mainHeading {
+  margin: 25px 0 18px 0;
+  font-weight: bolder;
+  font-size: 19px;
+}
+.header-1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 750px;
+  height: 38px;
+}
+.sarchContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+  width: 595px;
+  height: 38px;
+  border: solid #6c63ff 1px;
+  border-radius: 5px;
+}
+.sarchContainer input {
+  width: 530px;
+  height: 36px;
+  outline: none;
+}
+.sarchContainer img {
+  width: 21px;
+  height: 21px;
+  color: #6c63ff;
+  cursor: pointer;
+}
+.dropDownMain {
+  position: relative;
+  display: inline-block;
+  /* display: flex; */
+  justify-content: space-around;
+  flex-direction: column;
+  border-radius: 5px;
+  width: 85px;
+  height: 39px;
+  cursor: pointer;
+}
+.dropDownButton {
+  background-color: #6c63ff;
+  border-radius: 5px;
+  width: 85px;
+  height: 38px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.dropDownButton p {
+  font-size: 18px;
+}
+.header-1 .themeContainer {
+  background-color: #6c63ff;
+  height: 38px;
+  width: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+.dropDownButton img {
+  width: 6px;
+  height: 3px;
+  color: white;
+}
+/* Show the dropdown on hover */
+.dropDownMain:hover .dropDownButtonContainer {
+  display: block;
+}
+.dropDownButtonContainer {
+  display: none; /* Hide by default */
+  position: absolute;
+  top: 100%; /* Position below the main button */
+  left: 0;
+  background-color: white;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  padding: 5px 0;
+}
+
+.dropDownButtonContainer .allTaskButton {
+  width: 100%;
+  font-size: 14px;
+}
+.allTaskButton:hover {
+  background-color: #dbd9f9;
+}
+.themeContainer img {
+  width: 22px;
+  height: 22px;
+}
+.mainBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 750px;
+  height: 575px;
+  margin-top: 145px;
+}
+/* Task detective picture */
+.taskDetective {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 221px;
+  height: 174px;
+  margin-top: 15px;
+}
+.mainBody .task:last-of-type .taskBorder {
+  display: none;
+}
+.addTaskButton {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  bottom: 111px;
+  right: 12px;
+  background-color: #6c63ff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.addTaskButton img {
+  width: 24px;
+  height: 24px;
+  color: white;
+}

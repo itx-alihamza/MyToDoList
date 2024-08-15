@@ -1,0 +1,45 @@
+.task {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 520px;
+  height: 64px;
+}
+.task .taskContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.taskContainer .taskDiv-1 {
+  display: flex;
+  flex-direction: row;
+}
+.taskContainer .taskDiv-1 input {
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+}
+.taskContainer .taskDiv-1 label {
+  font-weight: bold;
+  margin-left: 15px;
+  cursor: pointer;
+}
+.taskContainer .taskDiv-2 {
+  display: flex;
+  flex-direction: row;
+  width: 45px;
+  height: 24px;
+  justify-content: space-between;
+  align-items: center;
+}
+.taskContainer .taskDiv-2 img {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.task .taskBorder {
+  width: 520px;
+  margin-bottom: 18px;
+  background-color: #b1adfb;
+  height: 1px;
+}
