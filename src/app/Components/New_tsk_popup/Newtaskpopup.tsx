@@ -8,7 +8,7 @@ const Newtaskpopup = ({
   onNewTaskPopupCancel,
   onNewTaskPopupApply,
 }: NewtaskPopTypes) => {
-  const [newTask, setNewTask] = useState(null);
+  const [newTask, setNewTask] = useState("");
   return (
     <div className="newTPMain">
       <div className="newTP">
