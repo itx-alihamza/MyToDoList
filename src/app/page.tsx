@@ -53,11 +53,11 @@ export default function Home() {
     );
     setTask(inCompletedTasks);
   }
-  function handleOnTaskDelete(index) {
+  function handleOnTaskDelete(index: any) {
     var filterTask = task.filter((task, i) => index != i);
     setTask(filterTask);
   }
-  function handleOnTaskEdit(editIndex, editTaskValue) {
+  function handleOnTaskEdit(editIndex: number, editTaskValue: string) {
     var editTasks = task.map((item, index) => {
       if (index == editIndex) {
         item.task = editTaskValue;
@@ -69,8 +69,8 @@ export default function Home() {
     setTask(editTasks);
     setEditTaskPopup(!editTaskPopup);
   }
-  function handleNewTaskApply(newTask) {
-    var newTaskObj = {
+  function handleNewTaskApply(newTask: string) {
+    var newTaskObj: any = {
       task: newTask,
       isChecked: false,
       id: generateUniqueId,
@@ -81,7 +81,7 @@ export default function Home() {
     setNewTaskPopup(!newTaskPopup);
     taskBackup = task;
   }
-  function handleSearchTask(searchInput) {
+  function handleSearchTask(searchInput: string) {
     if (searchInput != "") {
       console.log("search input value", searchInput);
       var filterTasks = task.filter((item) =>
@@ -92,10 +92,7 @@ export default function Home() {
       setTask(taskBackup);
     }
   }
-  // Debugging editIndex value
-  useState(() => {
-    if (editIndex != null) console.log("edit index value: ", editIndex);
-  }, [editIndex]);
+
   return (
     <div className="mainPageContainer">
       <div className="mainContainer">
@@ -154,13 +151,8 @@ export default function Home() {
               key={index}
               index={index}
               task={item}
-              handleCheckBox={(taskObj) => {
+              handleCheckBox={(taskObj: any) => {
                 console.log("taskObj :", taskObj);
-                // taskObj.isChecked = !taskObj.isChecked;
-                // task[index] = taskObj;
-                // let updateTasks = task;
-                // console.log("update Tasks array : ", updateTasks);
-                // setTask(updateTasks);
                 const updateTasks = task.map((item) => {
                   if (item.id == taskObj.id) {
                     taskObj.isChecked = !taskObj.isChecked;

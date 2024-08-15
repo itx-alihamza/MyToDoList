@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Newtaskpopup.css";
 interface NewtaskPopTypes {
   onNewTaskPopupCancel: () => void;
-  onNewTaskPopupApply: () => void;
+  onNewTaskPopupApply: (newTask: string) => void;
 }
 const Newtaskpopup = ({
   onNewTaskPopupCancel,
