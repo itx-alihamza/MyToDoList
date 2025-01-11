@@ -1,5 +1,5 @@
 //Get Data
-const Url = "http://localhost:4000/api/tasks/";
+const Url = "http://13.233.101.66:4000/api/tasks/";
 export async function fetchTaskData(posts) {
   try {
     console.log("Inside Get Api");
