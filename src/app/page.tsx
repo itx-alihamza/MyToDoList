@@ -1,95 +1,158 @@
 "use client";
-import Image from "next/image";
 import "./page.css";
-import Task from "./Components/Task/Task";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Newtaskpopup from "./Components/New_tsk_popup/Newtaskpopup";
 import EditPopup from "./Components/EditPopup/EditPopup";
+import { FetchTask, FetchTasks } from "./utils/types";
+import Task from "./Components/Task/Task";
+import {
+  deleteTaskData,
+  fetchTaskData,
+  postTaskData,
+  putTaskData,
+} from "./api/tasks";
+
 export default function Home() {
   console.log("ali hamza");
+  const [task, setTask] = useState<any>(); // For tasks
+  const [editTaskPopup, setEditTaskPopup] = useState(false); // For edit task Popup
+  const [editIndex, setEditIndex] = useState<any | null>(null); // Task index to edit
+  const [editInputValue, setEditInputValue] = useState<null | object>(null);
+  const [newTaskPopup, setNewTaskPopup] = useState<boolean>(false); // For new task popup
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [taskLatest, setTaskLatest] = useState<boolean>(false);
+  const firstRender = useRef(true);
+  const [filterdTasks, setFilteredTasks] = useState<any>(task);
+  const [searchField, setSearchField] = useState<string | any>(""); //Active or not
+  const [whileSearchFieldActive, setWhileSearchFieldActive] =
+    useState<any>(null);
+
+  //For managing filter
+  useEffect(() => {
+    setFilteredTasks(task);
+  }, [task]);
+
+  //handle get data
+
+  //Get All Data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const tasks = await fetchTaskData();
+        console.log("Get data successfully.", tasks);
+        setTask(tasks);
+        setFilteredTasks(tasks);
+        // setFetchTaskData(tasks);
+      } catch (error) {
+        console.log("🚀 ~ fetchData ~ error:", error);
+      }
+    };
+    fetchData();
+    return () => {
+      console.log("Unmount");
+    };
+  }, [taskLatest]);
+
+  //Post Data
+  const handlePostData = async (message: string) => {
+    console.log("🚀 ~ handlePostData ~ message:", message);
+    const data = await postTaskData(message); //Api call
+    console.log("🚀 ~ handlePostData ~ isSuccess:", data);
+    if (data.isSuccess) {
+      console.log("🚀 ~ handlePostData ~ data.Task:", data.task);
+      setTask([data.task, ...task]);
+    } else {
+      console.log("SOmething went wrong");
+    }
+  };
+
+  // Put Data
+  useEffect(() => {
+    if (firstRender) {
+      firstRender.current = false;
+      return;
+    }
+
+    console.log("Selected task :", selectedTask);
+    putTaskData(selectedTask);
+  }, [selectedTask]);
+
+  async function handleEditTaskApply(editIndex: number, editTaskValue: string) {
+    console.log("Inside task edit.");
+    let updatedTask = {};
+    var editTasks = task.map((item: any, index: number) => {
+      if (item._id == selectedTask._id) {
+        item.message = editTaskValue;
+        updatedTask = item;
+        return item;
+      } else {
+        return item;
+      }
+    });
+    let res = await putTaskData(updatedTask);
+    if (res.isSuccess) {
+      setTask(editTasks);
+    } else {
+      alert("Something went wrong.");
+    }
+    setEditTaskPopup(!editTaskPopup);
+  }
+
+  //Delete data.
+  async function handleOnTaskDelete(data: any) {
+    var filterTask = task.filter(
+      (item: any, i: number) => item._id != data._id
+    );
+    const res = await deleteTaskData(data._id);
+    if (res.isSuccess) {
+      setTask(filterTask);
+    } else alert("Something went wrong");
+  }
+
   // For unique id.
   function generateUniqueId(prefix = "") {
     const randomPart = Math.random().toString(36).substring(2, 10);
     const timestampPart = Date.now().toString(36);
     return `${prefix}${randomPart}${timestampPart}`;
   }
-  const data = [
-    {
-      task: "this task 1",
-      isChecked: false,
-      id: generateUniqueId(),
-    },
-    {
-      task: "this task 2",
-      isChecked: false,
-      id: generateUniqueId(),
-    },
-    {
-      task: "this task 3",
-      isChecked: false,
-      id: generateUniqueId(),
-    },
-  ];
-  let taskBackup = data;
-  const [task, setTask] = useState(taskBackup); // For tasks
-  const [editTaskPopup, setEditTaskPopup] = useState(false); // For edit task Popup
-  const [editIndex, setEditIndex] = useState<any | null>(null); // Task index to edit
-  const [editInputValue, setEditInputValue] = useState("");
-  const [newTaskPopup, setNewTaskPopup] = useState(false); // For new task popup
-  function handleOnClickAllTasks() {
-    setTask(taskBackup);
-  }
-  function handleOnClickCompletedTasks() {
-    console.log("Inside Completed function");
-    var completedTasks = task.filter((item) =>
-      item.isChecked == false ? null : true
-    );
-    setTask(completedTasks);
-  }
-  function handleOnClickIncompletedTasks() {
-    console.log("Inside Incompleted function");
-    var inCompletedTasks = task.filter((item) =>
-      item.isChecked == true ? null : true
-    );
-    setTask(inCompletedTasks);
-  }
-  function handleOnTaskDelete(index: any) {
-    var filterTask = task.filter((task, i) => index != i);
-    setTask(filterTask);
-  }
-  function handleOnTaskEdit(editIndex: number, editTaskValue: string) {
-    var editTasks = task.map((item, index) => {
-      if (index == editIndex) {
-        item.task = editTaskValue;
-        return item;
-      } else {
-        return item;
-      }
-    });
-    setTask(editTasks);
-    setEditTaskPopup(!editTaskPopup);
+  function handleFilterTasks(taskFilter: string = "all") {
+    console.log("Inside handle filter tasks", taskFilter);
+    if (!searchField) {
+      const filterTask = task?.filter((item: any) => {
+        if (taskFilter == "completed") return item.isChecked;
+        else if (taskFilter == "incomplete") return !item.isChecked;
+        return true;
+      });
+      setFilteredTasks(filterTask);
+    } else if (searchField) {
+      console.log("while search : ", filterdTasks, whileSearchFieldActive);
+      const filterData = whileSearchFieldActive?.filter((item: any) => {
+        if (taskFilter == "completed") return item.isChecked;
+        else if (taskFilter == "incomplete") return !item.isChecked;
+        return true;
+      });
+      console.log("🚀 ~ filterData ~ filterData:", filterData);
+      setFilteredTasks(filterData);
+    }
   }
   function handleNewTaskApply(newTask: string) {
-    var newTaskObj: any = {
-      task: newTask,
-      isChecked: false,
-      id: generateUniqueId,
-    };
     // var tempArray = task.filter((item) => item ? true : null)
-    task.push(newTaskObj);
+    // task.push(newTaskObj);
     setTask(task);
     setNewTaskPopup(!newTaskPopup);
-    taskBackup = task;
   }
   function handleSearchTask(searchInput: string) {
-    if (searchInput != "") {
-      console.log("search input value", searchInput);
-      var filterTasks = task.filter((item) =>
-        item.task.includes(searchInput) ? true : false
+    if (searchInput) {
+      console.log("Search Input : ", searchInput);
+      var filterTasks = task.filter((item: any) =>
+        item.message.includes(searchInput) ? true : false
       );
-      setTask(filterTasks);
+      console.log("🚀 ~ handleSearchTask ~ filterTasks:", filterTasks);
+      setFilteredTasks(filterTasks);
+      setWhileSearchFieldActive(filterTasks);
     } else {
-      setTask(taskBackup);
+      console.log("Search Input : ", searchInput);
+      setFilteredTasks(task);
     }
   }
 
@@ -106,6 +169,7 @@ export default function Home() {
                 placeholder="Search note..."
                 onChange={(e) => {
                   handleSearchTask(e.target.value);
+                  setSearchField(e.target.value);
                 }}
               ></input>
               <img className="searchButtonIcon" src="/Icons/search.png" />
@@ -118,19 +182,19 @@ export default function Home() {
               <div className="dropDownButtonContainer">
                 <button
                   className="allTaskButton"
-                  onClick={() => handleOnClickAllTasks()}
+                  onClick={() => handleFilterTasks("all")}
                 >
                   All
                 </button>
                 <button
                   className="allTaskButton"
-                  onClick={() => handleOnClickCompletedTasks()}
+                  onClick={() => handleFilterTasks("completed")}
                 >
                   Completed
                 </button>
                 <button
                   className="allTaskButton"
-                  onClick={() => handleOnClickIncompletedTasks()}
+                  onClick={() => handleFilterTasks("incomplete")}
                 >
                   Incomplete
                 </button>
@@ -143,53 +207,63 @@ export default function Home() {
         </header>
 
         <div className="mainBody">
-          {task.length == 0 && (
+          {filterdTasks?.length == 0 && (
             <img src="/Icons/noTask.png" className="taskDetective" />
           )}
-          {task.map((item, index) => (
+          {filterdTasks?.map((item: any, index: number) => (
             <Task
               key={index}
-              index={index}
+              id={item.id}
               task={item}
-              handleCheckBox={(taskObj: any) => {
-                console.log("taskObj :", taskObj);
-                const updateTasks = task.map((item) => {
-                  if (item.id == taskObj.id) {
+              handleCheckBox={async (taskObj: any) => {
+                // console.log("🚀 ~ Home ~ taskObj:", taskObj._id);
+                let updatedObject = {};
+                const updateTasks = task.map((item: any) => {
+                  if (item._id == taskObj._id) {
+                    console.log(
+                      "🚀 ~ updateTasks ~ item:",
+                      item._id,
+                      taskObj._id
+                    );
                     taskObj.isChecked = !taskObj.isChecked;
+                    updatedObject = taskObj;
                     return taskObj;
                   } else {
                     return item;
                   }
                 });
-                console.log("Update Tasks array:", updateTasks);
-                setTask(updateTasks);
-                taskBackup = updateTasks;
-                console.log("taskBackup", taskBackup);
+                const res = await putTaskData(updatedObject);
+                if (res.isSuccess) {
+                  setTask(updateTasks);
+                } else {
+                  alert("something went wrong");
+                }
               }}
               onTaskEdit={() => {
                 console.log("task edit clicked");
+                setSelectedTask(item);
                 setEditTaskPopup(!editTaskPopup);
-                setEditInputValue(item.task);
+                setEditInputValue(item.message);
                 console.log("task input value", item);
                 setEditIndex(index);
                 console.log("Edit index : ", editIndex);
               }}
               onTaskDelete={() => {
                 console.log("tsk delete pressed");
-                handleOnTaskDelete(index);
+                handleOnTaskDelete(item);
               }}
             />
           ))}
-        </div>
-        {/* New Task button */}
-        <div
-          className="addTaskButton"
-          onClick={() => {
-            console.log("new task button clicked");
-            setNewTaskPopup(!newTaskPopup);
-          }}
-        >
-          <img src="/Icons/addTask.png" />
+          {/* New Task button */}
+          <div
+            className="addTaskButton"
+            onClick={(e) => {
+              console.log("new task button clicked");
+              setNewTaskPopup(!newTaskPopup);
+            }}
+          >
+            <img src="/Icons/addTask.png" />
+          </div>
         </div>
       </div>
       {editTaskPopup == false ? null : (
@@ -197,15 +271,18 @@ export default function Home() {
           editInputValue={editInputValue}
           editIndex={editIndex}
           editTaskPopupCancel={() => setEditTaskPopup(!editTaskPopup)}
-          editTaskPopupApply={(editIndex, editTaskValue) =>
-            handleOnTaskEdit(editIndex, editTaskValue)
-          }
+          editTaskPopupApply={(editIndex, editTaskValue) => {
+            handleEditTaskApply(editIndex, editTaskValue);
+          }}
         />
       )}
       {newTaskPopup == false ? null : (
         <Newtaskpopup
           onNewTaskPopupCancel={() => setNewTaskPopup(!newTaskPopup)}
-          onNewTaskPopupApply={(newTask) => handleNewTaskApply(newTask)}
+          onNewTaskPopupApply={(newTask) => {
+            handleNewTaskApply(newTask);
+            handlePostData(newTask);
+          }}
         />
       )}
     </div>

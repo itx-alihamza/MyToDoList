@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import "./Task.css";
 import { isContext } from "vm";
 interface TaskTypes {
-  index: Number;
+  id: Number;
   task: any;
   onTaskDelete: () => void;
   onTaskEdit: () => void;
   handleCheckBox: (task: object) => void;
 }
 const Task = ({
-  index,
+  id,
   task,
   onTaskDelete,
   onTaskEdit,
@@ -21,18 +21,17 @@ const Task = ({
         <div className="taskDiv-1">
           <input
             type="checkBox"
-            id={`task-${index}`}
             checked={task.isChecked}
             onChange={() => handleCheckBox(task)}
           />
           <label
-            id={`taskNumber-${index}`}
+            id={`taskNumber-${id}`}
             style={{
               textDecoration: task.isChecked ? "line-through" : "none",
               color: task.isChecked ? "#8e8e8e" : "black", // Ensure "black" is a string
             }}
           >
-            {task.task}
+            {task.message}
           </label>
         </div>
         <div className="taskDiv-2">
@@ -44,7 +43,7 @@ const Task = ({
           <img
             src="/Icons/deleteTask.png"
             alt="deleteIcon"
-            id={`taskDeleteButton-${index}`}
+            id={`taskDeleteButton-${id}`}
             onClick={() => onTaskDelete()}
           />
         </div>

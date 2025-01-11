@@ -126,6 +126,7 @@
 }
 .mainBody {
   display: flex;
+  position: relative;
   flex-direction: column;
   align-items: center;
   width: 750px;
@@ -134,7 +135,11 @@
 }
 /* Task detective picture */
 .taskDetective {
+  position: fixed;
   display: flex;
+  left: 50%;
+  top: 30%;
+  transform: translateX(-50%);
   justify-content: center;
   align-items: center;
   width: 221px;
@@ -145,14 +150,14 @@
   display: none;
 }
 .addTaskButton {
-  position: absolute;
+  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 50px;
   height: 50px;
-  bottom: 111px;
-  right: 12px;
+  top: 80%;
+  right: 23.2%;
   background-color: #6c63ff;
   border-radius: 50%;
   cursor: pointer;
