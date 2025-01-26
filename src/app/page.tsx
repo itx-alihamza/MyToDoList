@@ -11,7 +11,9 @@ import {
   postTaskData,
   putTaskData,
 } from "./api/tasks";
-
+import * as loadingAnimation from "../../public/animations/loadingAnimation.json";
+import Lottie from "lottie-react";
+import { Source_Code_Pro } from "next/font/google";
 export default function Home() {
   console.log("ali hamza");
   const [task, setTask] = useState<any>(); // For tasks
@@ -26,6 +28,7 @@ export default function Home() {
   const [searchField, setSearchField] = useState<string | any>(""); //Active or not
   const [whileSearchFieldActive, setWhileSearchFieldActive] =
     useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   //For managing filter
   useEffect(() => {
@@ -38,7 +41,9 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const tasks = await fetchTaskData();
+        setIsLoading(false);
         console.log("Get data successfully.", tasks);
         setTask(tasks);
         setFilteredTasks(tasks);
@@ -56,7 +61,9 @@ export default function Home() {
   //Post Data
   const handlePostData = async (message: string) => {
     console.log("🚀 ~ handlePostData ~ message:", message);
+    setIsLoading(true);
     const data = await postTaskData(message); //Api call
+    setIsLoading(false);
     console.log("🚀 ~ handlePostData ~ isSuccess:", data);
     if (data.isSuccess) {
       console.log("🚀 ~ handlePostData ~ data.Task:", data.task);
@@ -103,7 +110,9 @@ export default function Home() {
     var filterTask = task.filter(
       (item: any, i: number) => item._id != data._id
     );
+    setIsLoading(true);
     const res = await deleteTaskData(data._id);
+    setIsLoading(false);
     if (res.isSuccess) {
       setTask(filterTask);
     } else alert("Something went wrong");
@@ -158,112 +167,118 @@ export default function Home() {
 
   return (
     <div className="mainPageContainer">
+      <header className="header">
+        <h1 className="mainHeading">TODO LIST</h1>
+        <div className="header-1">
+          <div className="sarchContainer">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search note..."
+              onChange={(e) => {
+                handleSearchTask(e.target.value);
+                setSearchField(e.target.value);
+              }}
+            ></input>
+            <img className="searchButtonIcon" src="/Icons/search.png" />
+          </div>
+          <div className="dropDownMain">
+            <div className="dropDownButton">
+              <p>All</p>
+              <img src="/Icons/dropdown.png" />
+            </div>
+            <div className="dropDownButtonContainer">
+              <button
+                className="allTaskButton"
+                onClick={() => handleFilterTasks("all")}
+              >
+                All
+              </button>
+              <button
+                className="allTaskButton"
+                onClick={() => handleFilterTasks("completed")}
+              >
+                Completed
+              </button>
+              <button
+                className="allTaskButton"
+                onClick={() => handleFilterTasks("incomplete")}
+              >
+                Incomplete
+              </button>
+            </div>
+          </div>
+          <div className="themeContainer">
+            <img src="/Icons/theme.png" />
+          </div>
+        </div>
+      </header>
       <div className="mainContainer">
-        <header className="header">
-          <h1 className="mainHeading">TODO LIST</h1>
-          <div className="header-1">
-            <div className="sarchContainer">
-              <input
-                type="text"
-                id="searchInput"
-                placeholder="Search note..."
-                onChange={(e) => {
-                  handleSearchTask(e.target.value);
-                  setSearchField(e.target.value);
-                }}
-              ></input>
-              <img className="searchButtonIcon" src="/Icons/search.png" />
-            </div>
-            <div className="dropDownMain">
-              <div className="dropDownButton">
-                <p>All</p>
-                <img src="/Icons/dropdown.png" />
-              </div>
-              <div className="dropDownButtonContainer">
-                <button
-                  className="allTaskButton"
-                  onClick={() => handleFilterTasks("all")}
-                >
-                  All
-                </button>
-                <button
-                  className="allTaskButton"
-                  onClick={() => handleFilterTasks("completed")}
-                >
-                  Completed
-                </button>
-                <button
-                  className="allTaskButton"
-                  onClick={() => handleFilterTasks("incomplete")}
-                >
-                  Incomplete
-                </button>
-              </div>
-            </div>
-            <div className="themeContainer">
-              <img src="/Icons/theme.png" />
-            </div>
-          </div>
-        </header>
-
-        <div className="mainBody">
-          {filterdTasks?.length == 0 && (
-            <img src="/Icons/noTask.png" className="taskDetective" />
-          )}
-          {filterdTasks?.map((item: any, index: number) => (
-            <Task
-              key={index}
-              id={item.id}
-              task={item}
-              handleCheckBox={async (taskObj: any) => {
-                // console.log("🚀 ~ Home ~ taskObj:", taskObj._id);
-                let updatedObject = {};
-                const updateTasks = task.map((item: any) => {
-                  if (item._id == taskObj._id) {
-                    console.log(
-                      "🚀 ~ updateTasks ~ item:",
-                      item._id,
-                      taskObj._id
-                    );
-                    taskObj.isChecked = !taskObj.isChecked;
-                    updatedObject = taskObj;
-                    return taskObj;
-                  } else {
-                    return item;
-                  }
-                });
-                const res = await putTaskData(updatedObject);
-                if (res.isSuccess) {
-                  setTask(updateTasks);
-                } else {
-                  alert("something went wrong");
-                }
-              }}
-              onTaskEdit={() => {
-                console.log("task edit clicked");
-                setSelectedTask(item);
-                setEditTaskPopup(!editTaskPopup);
-                setEditInputValue(item.message);
-                console.log("task input value", item);
-                setEditIndex(index);
-                console.log("Edit index : ", editIndex);
-              }}
-              onTaskDelete={() => {
-                console.log("tsk delete pressed");
-                handleOnTaskDelete(item);
-              }}
+        {isLoading && (
+          <div className="z-20 fixed top-0 left-0 bottom-0 right-0 bg-gray-500 bg-transparent content-center">
+            <Lottie
+              animationData={loadingAnimation}
+              loop={true}
+              className="h-40 md:h-30 xs:h-20"
             />
-          ))}
-          {/* New Task button */}
-          <div
-            className="addTaskButton"
-            onClick={(e) => {
-              console.log("new task button clicked");
-              setNewTaskPopup(!newTaskPopup);
-            }}
-          >
-            <img src="/Icons/addTask.png" />
           </div>
+        )}
+        {filterdTasks?.length == 0 && (
+          <img src="/Icons/noTask.png" className="taskDetective" />
+        )}
+        {filterdTasks?.map((item: any, index: number) => (
+          <Task
+            key={index}
+            id={item.id}
+            task={item}
+            handleCheckBox={async (taskObj: any) => {
+              // console.log("🚀 ~ Home ~ taskObj:", taskObj._id);
+              let updatedObject = {};
+              const updateTasks = task.map((item: any) => {
+                if (item._id == taskObj._id) {
+                  console.log(
+                    "🚀 ~ updateTasks ~ item:",
+                    item._id,
+                    taskObj._id
+                  );
+                  taskObj.isChecked = !taskObj.isChecked;
+                  updatedObject = taskObj;
+                  return taskObj;
+                } else {
+                  return item;
+                }
+              });
+              const res = await putTaskData(updatedObject);
+              if (res.isSuccess) {
+                setTask(updateTasks);
+              } else {
+                alert("something went wrong");
+              }
+            }}
+            onTaskEdit={() => {
+              console.log("task edit clicked");
+              setSelectedTask(item);
+              setEditTaskPopup(!editTaskPopup);
+              setEditInputValue(item.message);
+              console.log("task input value", item);
+              setEditIndex(index);
+              console.log("Edit index : ", editIndex);
+            }}
+            onTaskDelete={() => {
+              console.log("tsk delete pressed");
+              handleOnTaskDelete(item);
+            }}
+          />
+        ))}
+        {/* New Task button */}
+        <div
+          className="addTaskButton"
+          onClick={(e) => {
+            console.log("new task button clicked");
+            setNewTaskPopup(!newTaskPopup);
+          }}
+        >
+          <img src="/Icons/addTask.png" />
         </div>
       </div>
       {editTaskPopup == false ? null : (

@@ -1,6 +1,9 @@
 .mainPageContainer {
+  position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
 }
 .mainContainer {
   position: relative;
@@ -8,20 +11,23 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 750px;
+  width: 100vw;
+  overflow-y: auto;
+  margin-top: 149px;
 }
+
 /* HomePage Header  */
 .header {
-  position: fixed;
-  display: flex;
+  height: 135px;
   background-color: white;
+  position: fixed;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  width: 750px;
-  height: 135px;
-  top: 0;
-  z-index: 100;
+  width: 100vw;
 }
 .header .mainHeading {
   margin: 25px 0 18px 0;
@@ -124,14 +130,12 @@
   width: 22px;
   height: 22px;
 }
-.mainBody {
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  align-items: center;
-  width: 750px;
-  height: 575px;
-  margin-top: 145px;
+.mainbody {
+  width: 100vw;
+  /* flex: 1; Take up the remaining space in the parent */
+  overflow-y: auto; /* Allow vertical scrolling */
+  padding: 16px; /* Optional padding for content */
+  background-color: #ffffff; /* Optional background */
 }
 /* Task detective picture */
 .taskDetective {
